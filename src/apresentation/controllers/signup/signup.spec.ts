@@ -118,6 +118,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(400)
     expect(httpResponse.body).toEqual(new InvalidParamError('passwordConfirmation'))
   })
+
   test('should return 400 if no an invalid email is provided', () => {
     const { sut, emailValidatorStub } = makeSut()
     jest.spyOn(emailValidatorStub, 'isValid').mockReturnValueOnce(false)
@@ -192,6 +193,7 @@ describe('SignUp Controller', () => {
     expect(httpResponse.statusCode).toBe(500)
     expect(httpResponse.body).toEqual(new ServerError())
   })
+
   test('should call AddAccount with correct values', () => {
     const { sut, addAccountStub } = makeSut()
     const addSpy = jest.spyOn(addAccountStub, 'add')
@@ -210,6 +212,28 @@ describe('SignUp Controller', () => {
       name: 'any_name',
       email: 'any_email@email.com',
       password: 'any_password'
+    })
+  })
+
+  test('should return 200 if no an valid data is provided', () => {
+    const { sut } = makeSut()
+
+    const httpRequest = {
+      body: {
+        name: 'valid_name',
+        email: 'valid_email@email.com',
+        password: 'valid_password',
+        passwordConfirmation: 'valid_password'
+
+      }
+    }
+    const httpResponse = sut.handle(httpRequest)
+    expect(httpResponse.statusCode).toBe(200)
+    expect(httpResponse.body).toEqual({
+      id: 'valid_id',
+      name: 'valid_name',
+      email: 'valid_email@email.com',
+      password: 'valid_password'
     })
   })
 })
